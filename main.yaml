@@ -1,0 +1,81 @@
+esphome:
+  name: floorheating-controller
+  friendly_name: FloorHeatingController
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "I3R5Nv3wkiOT85A1hLs1PZZB3orL15TB9W6K6Jc9tmE="
+
+ota:
+  - platform: esphome
+    password: "55feed1a933b5b324b482cf688b88ce9"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Optional manual IP
+  manual_ip:
+    static_ip: 192.168.1.69
+    gateway: 192.168.1.254
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "FloorheatingController"
+    password: "cxjpHijNRvL5"
+
+# WiFi information sensors
+sensor:
+  - platform: wifi_signal
+    name: Signal Strength
+    update_interval: 60s
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: IP
+      icon: mdi:ip-network-outline
+    mac_address:
+      name: MAC
+      icon: mdi:network-outline
+
+captive_portal:
+    
+
+switch:
+  - platform: gpio
+    name: "LED"
+    pin: GPIO23
+  - platform: gpio
+    name: "Relay1"
+    pin: GPIO13
+  - platform: gpio
+    name: "Relay2"
+    pin: GPIO12
+  - platform: gpio
+    name: "Relay3"
+    pin: GPIO14
+  - platform: gpio
+    name: "Relay4"
+    pin: GPIO27
+  - platform: gpio
+    name: "Relay5"
+    pin: GPIO26
+  - platform: gpio
+    name: "Relay6"
+    pin: GPIO25
+  - platform: gpio
+    name: "Relay7"
+    pin: GPIO33
+  - platform: gpio
+    name: "Relay8"
+    pin: GPIO32
