@@ -1,6 +1,6 @@
 # esphome-floor-heating-controller
 
-This is an [ESPHome](https://esphome.io/) project to present to [HomeAssistant](https://www.home-assistant.io/) a floor heating controller, i.e. a board that can turn on or off the flow of warm water in under-floor heating pipes.
+This is an [ESPHome](https://esphome.io/) project to integrate in [HomeAssistant](https://www.home-assistant.io/) a floor heating controller, i.e. a board that can turn on or off the flow of warm water in under-floor heating pipes.
 
 In particular this project provides an [ESPHome package](https://esphome.io/components/packages/) that is easy to reference
 from an ESPHome configuration. Keep reading for more details.
@@ -11,11 +11,11 @@ from an ESPHome configuration. Keep reading for more details.
 ## Highlights
 
 * Plain simple actuator board, all the hardware is **Commercial Off-The-Shelf** (COTS), 
-typically available on Aliexpress, and very cheap; easy to replace in future if it fails;
+typically available on Aliexpress or similar online stores, and very cheap; easy to replace in future if it fails;
 * Connects to your [Home Assistant](https://www.home-assistant.io/) instance via Wi-fi;
-* Designed to be **capable of running in a dumb, non-smart mode** if Wi-fi connection drops
-or your HomeAssistant instance has troubles;
 * Exposing to HomeAssistant up to 8 basic switches plus 2 temperature sensors; each switch represents an heating under-floor circuit; temperature sensors provides measurements for both the incoming warm water and for the room temperature.
+* [work in progress]: Designed to be **capable of running in a dumb, non-smart mode** if Wi-fi connection drops
+or your HomeAssistant instance has troubles;
 
 
 ## Floor Heating Overview
@@ -25,10 +25,20 @@ on the floor heating **manifold**:
 
 <img title="Floor heating manifold" alt="Floor heating manifold" src="images/floor-heating-manifold.png">
 
-Please note that the thermal actuators I have installed in my manifolds (and automated by this project) are pretty standard ones. Here's a brief summary of their properties:
+If you have floor heating in your house, then it's very likely you have such kind of manifold somewhere
+behind a panel or cover.
+The number of **thermal actuators** will vary and will depend on the size of the floor / rooms that are
+heated by the system. 
+
+Let's focus on the actuators. There are 2 standard types:
+1. 24V AC/DC actuators: these are most common in North America
+2. 230V AC actuators: these are most common in Europe
+
+The thermal actuators I have installed in my manifolds (and automated by this project) are pretty standard 230V ones. 
+Here's a brief summary of their properties:
 
 * Electrical:
-    * powered at 220V in this project (but since the relay board exposes dry contacts, it could be used to power also 24V thermal actuators).
+    * powered at 230V in this project (but since the relay board exposes dry contacts, it could be used to power also 24V thermal actuators).
     * normally-closed (NC)
     * 3W power consumption
 
@@ -37,12 +47,14 @@ Please note that the thermal actuators I have installed in my manifolds (and aut
     * 4.5mm stroke
     * response time: 180-300s
 
-Electrical consideration: the amount of Amperes flowing on the relay board presented below will be minimal: at 220V to supply the rated 3W power of each actuator the wires need to carry only about 14mA.
-
 Finally note that this project does not provide any attempt to make the flow-meters smart devices. That would be a nice plus but probably not very useful in practice (?)
 
 
 ## Architecture Overview
+
+In the following picture the parts in green are those provided by this project.
+The grey parts (an HomeAssistant instance, thermal actuators, flow meters, piping, etc) is outside the scope
+of this project and is considered to be already installed and working fine:
 
 <img title="Overview" alt="Overview" src="images/overview.drawio.png">
 
@@ -94,7 +106,7 @@ Its main characteristics are:
 <img title="Relay board" alt="Relay board" src="images/esp-relay-board-bare.jpg">
 
 
-* 220V to 5V power adapter (10W), [bought on Aliexpress](https://it.aliexpress.com/item/1005011566356715.html?spm=a2g0o.order_list.order_list_main.41.53a81802JCkFmo&gatewayAdapt=glo2ita) (4€ in Oct 2025); please note that it's very important that you choose a power adapter module that can provide up to 2Amps because when the relay modules switch simultaneously, they can draw quite a good amount of power. [I had many issues](https://community.home-assistant.io/t/power-cycle-needed-after-triggering-a-relay-off-on-what-about-the-software-watchdog/986634/3) with the ESP32 board hanging or rebooting during OFF->ON transitions due to power supplies that were rated just 5V and 1A (5W).
+* 230V to 5V power adapter (10W), [bought on Aliexpress](https://it.aliexpress.com/item/1005011566356715.html?spm=a2g0o.order_list.order_list_main.41.53a81802JCkFmo&gatewayAdapt=glo2ita) (4€ in Oct 2025); please note that it's very important that you choose a power adapter module that can provide up to 2Amps because when the relay modules switch simultaneously, they can draw quite a good amount of power. [I had many issues](https://community.home-assistant.io/t/power-cycle-needed-after-triggering-a-relay-off-on-what-about-the-software-watchdog/986634/3) with the ESP32 board hanging or rebooting during OFF->ON transitions due to power supplies that were rated just 5V and 1A (5W).
 Finally see also the section down below "Power Consumption".
 
 * Temperature sensors, bought on Aliexpress (few € in Oct 2025)
@@ -112,19 +124,22 @@ Alternative sensors I also tested in an instance of this ESPHome Package are:
     see https://esphome.io/components/sensor/dht/
 
 
+Electrical consideration: the amount of Amperes flowing on the relay board presented below will be minimal: at 230V to supply the rated 3W power of each actuator the wires need to carry only about 14mA.
+
 ## ESP32 Relay Board Pinout
 
-The ESP32 relay board currently being used has the following pinout:
+The ESP32 relay board listed in the BOM above mounts 8 relays and an handy LED.
+The pinout is:
 
 * GPIO23: led D20
-* GPIO13: relay 1
-* GPIO12: relay 2
-* GPIO14: relay 3
-* GPIO27: relay 4
-* GPIO26: relay 5
-* GPIO25: relay 6
-* GPIO33: relay 7
-* GPIO32: relay 8
+* GPIO13: relay 1, indicated as `R1` below
+* GPIO12: relay 2, indicated as `R2` below
+* GPIO14: relay 3, indicated as `R3` below
+* GPIO27: relay 4, indicated as `R4` below
+* GPIO26: relay 5, indicated as `R5` below
+* GPIO25: relay 6, indicated as `R6` below
+* GPIO33: relay 7, indicated as `R7` below
+* GPIO32: relay 8, indicated as `R8` below
 
 Please note that GPIO12 is a strapping PIN and should only be used for I/O with care.
 Attaching external pullup/down resistors to strapping pins can cause unexpected failures.
@@ -256,7 +271,7 @@ Some consideration about power consumption, assuming worst case scenario:
 
 A back-of-the-envelope computation gives a total of **~1.2Amps** of power drawn from the 5V rail, which means about **7W**.
 
-The power consumption on the 220V rail is, again in the worst case, **~35W** assuming 8 thermal actuators all open and all consuming about 3W (pretty standard), plus the 7W power usage for the controller board.
+The power consumption on the 230V rail is, again in the worst case, **~35W** assuming 8 thermal actuators all open and all consuming about 3W (pretty standard), plus the 7W power usage for the controller board.
 
 
 ## TODO
