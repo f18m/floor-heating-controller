@@ -22,7 +22,7 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v6
       - name: ESPHome
-        uses: esphome/build-action@v7
+        uses: esphome/build-action@v8.1.0
         with:
           yaml-file: example-instance.yaml
           version: stable
